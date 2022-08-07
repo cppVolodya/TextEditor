@@ -1,0 +1,8 @@
+# ignore files
+*.pro.user
+build.py
+
+# ignore directories
+build/
+.idea/
+.PVS-Studio
