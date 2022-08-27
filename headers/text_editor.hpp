@@ -23,6 +23,8 @@ public:
 	explicit TextEditor(QWidget *parent = nullptr);
 
 	inline ~TextEditor() override;
+signals:
+	void CursorPositionChanged(const QTextCursor &text_cursor);
 protected:
 	void wheelEvent(QWheelEvent *wheel_event) override;
 
@@ -40,11 +42,72 @@ private:
 	QShortcut *m_shortcut_ctrl_minus;
 
 	QString m_current_filename;
+private slots:
+	inline void OnActionNewTriggered();
+	void OnActionOpenTriggered();
+	void OnActionSaveTriggered();
+
+	inline void OnActionCutTriggered();
+	inline void OnActionUndoTriggered();
+	inline void OnActionCopyTriggered();
+	inline void OnActionPasteTriggered();
+	inline void OnActionDeleteTriggered();
+
+	void OnActionFontTriggered();
+	inline void OnActionSyntaxHighlightingTriggered();
+
+	inline void CurrentCursorPosition();
+
+	void ZoomInTextEditorScale();
+	void ZoomOutTextEditorScale();
 };
 
 inline TextEditor::~TextEditor()
 {
 	delete this->m_ui;
+}
+
+inline void TextEditor::OnActionNewTriggered()
+{
+	this->m_ui->text_edit->clear();
+	this->setWindowTitle("Untitled - Notepad");
+	this->m_current_filename.clear();
+}
+
+inline void TextEditor::OnActionUndoTriggered()
+{
+	this->m_ui->text_edit->undo();
+}
+
+inline void TextEditor::OnActionCutTriggered()
+{
+	this->m_ui->text_edit->cut();
+}
+
+inline void TextEditor::OnActionCopyTriggered()
+{
+	this->m_ui->text_edit->copy();
+}
+
+inline void TextEditor::OnActionPasteTriggered()
+{
+	this->m_ui->text_edit->paste();
+}
+
+inline void TextEditor::OnActionDeleteTriggered()
+{
+	QKeyEvent *key_press{std::make_unique<QKeyEvent>(QEvent::KeyPress, Qt::Key_Delete, Qt::NoModifier).release()};
+	QApplication::postEvent(this->m_ui->text_edit, key_press);
+}
+
+inline void TextEditor::OnActionSyntaxHighlightingTriggered()
+{
+	this->m_ui->text_edit->setTextColor(QColorDialog::getColor(QColor(), this, "Syntax highlighting"));
+}
+
+inline void TextEditor::CurrentCursorPosition()
+{
+	emit this->CursorPositionChanged(this->m_ui->text_edit->textCursor());
 }
 }  // namespace N_TextEditor
 
