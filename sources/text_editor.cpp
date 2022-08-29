@@ -66,4 +66,35 @@ TextEditor::TextEditor(QWidget *parent)
 	(void)connect(this->m_shortcut_ctrl_minus, &QShortcut::activated,
 				  this,						   &TextEditor::ZoomOutTextEditorScale);
 }
+
+void TextEditor::wheelEvent(QWheelEvent *wheel_event)
+{
+	if (wheel_event->modifiers() == Qt::ControlModifier)
+	{
+		if (wheel_event->angleDelta().ry() > 0)
+		{
+			this->ZoomInTextEditorScale();
+		}
+		else
+		{
+			this->ZoomOutTextEditorScale();
+		}
+	}
+}
+
+bool TextEditor::eventFilter(QObject *object, QEvent *event)
+{
+	const auto wheel_event{dynamic_cast<QWheelEvent *>(event)};
+
+	bool is_handled{false};
+	if (object == this->m_ui->text_edit->viewport() &&
+		event->type() == QEvent::Wheel 				&&
+		wheel_event->modifiers() == Qt::ControlModifier)
+	{
+		wheelEvent(wheel_event);
+		is_handled = true;
+	}
+
+	return is_handled;
+}
 }  // namespace N_TextEditor
