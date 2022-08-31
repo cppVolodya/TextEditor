@@ -97,4 +97,99 @@ bool TextEditor::eventFilter(QObject *object, QEvent *event)
 
 	return is_handled;
 }
+
+void TextEditor::OnActionOpenTriggered()
+{
+	const QString path_to_file{QFileDialog::getOpenFileName(this, "Open")};
+	if (not path_to_file.isEmpty())
+	{
+		this->m_current_filename = path_to_file;
+		QFile input_file{path_to_file};
+		if (!input_file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			(void)QMessageBox::warning(this,
+									   "Warning",
+									   "Failed to open file for reading data: " + input_file.errorString());
+		}
+
+		this->m_ui->text_edit->setPlainText(input_file.readAll());
+
+		const auto position{path_to_file.lastIndexOf(QChar('/')) + 1};
+		const QString filename{path_to_file.right(path_to_file.size() - position)};
+		this->setWindowTitle(filename + " - Notepad");
+	}
+}
+
+void TextEditor::OnActionSaveTriggered()
+{
+	if (this->m_current_filename.isEmpty())
+	{
+		QString path_to_file{QFileDialog::getSaveFileName(this, "Save")};
+		if (not path_to_file.isEmpty())
+		{
+			this->m_current_filename = path_to_file;
+			QFile output_file{path_to_file};
+			if (!output_file.open(QIODevice::WriteOnly | QIODevice::Text))
+			{
+				(void)QMessageBox::warning(this,
+										   "Warning",
+										   "Could not open file for writing data: " + output_file.errorString());
+			}
+
+			const auto number_of_bytes{output_file.write(this->m_ui->text_edit->toPlainText().toLocal8Bit())};
+			if (number_of_bytes == -1)
+			{
+				(void)QMessageBox::warning(this,
+										   "Warning",
+										   "Could not write data to file: " + output_file.errorString());
+			}
+		}
+	}
+	else
+	{
+		QFile output_file{this->m_current_filename};
+		if (!output_file.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			(void)QMessageBox::warning(this,
+									   "Warning",
+									   "Could not open file for writing data: " + output_file.errorString());
+		}
+
+		const auto number_of_bytes{output_file.write(this->m_ui->text_edit->toPlainText().toLocal8Bit())};
+		if (number_of_bytes == -1)
+		{
+			(void)QMessageBox::warning(this,
+									   "Warning",
+									   "Could not write data to file: " + output_file.errorString());
+		}
+	}
+}
+
+void TextEditor::OnActionFontTriggered()
+{
+	bool check{true};
+	QFont font = QFontDialog::getFont(&check, QFont(), this, "Font...");
+
+	if (check) {
+		this->m_ui->text_edit->setCurrentFont(font);
+	}
+}
+
+void TextEditor::ZoomInTextEditorScale()
+{
+	if (StatusBar::S_MAX_SCALE_VALUE_FOR_TEXT_EDITOR > this->m_status_bar->GetTextEditorScaleValue())
+	{
+		this->m_ui->text_edit->zoomIn();
+		emit this->m_status_bar->TextEditorZoomSizeChanged(TextEditor::S_STEP_ZOOM_IN);
+	}
+}
+
+void TextEditor::ZoomOutTextEditorScale()
+{
+	if (StatusBar::S_MIN_SCALE_VALUE_FOR_TEXT_EDITOR < this->m_status_bar->GetTextEditorScaleValue())
+	{
+		this->m_ui->text_edit->zoomOut();
+		emit this->m_status_bar->TextEditorZoomSizeChanged(TextEditor::S_STEP_ZOOM_OUT);
+	}
+}
 }  // namespace N_TextEditor
