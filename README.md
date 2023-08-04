@@ -12,7 +12,7 @@
 
 "Text Editor" is a program designed for creating and editing text files, as well as viewing them on a monitor.
 
-![ProgramIcon](https://github.com/cppVolodya/tasks/assets/103601559/d6ab75dc-923c-48e2-8731-13d8ca073c1b)
+![ProgramIcon](https://github.com/cppVolodya/TextEditor/assets/103601559/0935db7e-2957-4325-8e5c-0b06a863ab8a)
 
 ## Tech Stack
 
@@ -28,7 +28,7 @@
 
 ## Demo
 
-https://github.com/cppVolodya/tasks/assets/103601559/ab212036-61e7-4cdd-b5be-7df0a3fefb64
+https://github.com/cppVolodya/TextEditor/assets/103601559/658ce133-1b76-4594-89ed-539863a0e5de
 
 ## Run Locally
 
